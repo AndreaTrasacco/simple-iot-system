@@ -1,0 +1,25 @@
+services:
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  devicedatacollector:
+    build: ./devicedatacollector
+    ports:
+      - "8888:8888"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - COLLECTOR_PORT=8888
+
+  measurementsaggregator:
+    build: ./measurementsaggregator
+    ports:
+      - "8889:8889"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - AGGREGATOR_PORT=8889
