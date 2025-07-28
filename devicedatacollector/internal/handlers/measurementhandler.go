@@ -10,6 +10,7 @@ import (
 
 	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/models"
 	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/services"
+	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/tools/validation"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -19,6 +20,14 @@ func UploadMeasurements(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 		api.RequestErrorHandler(w, err)
 		return
+	}
+
+	for _, measurement := range measurements {
+		if err := validation.ValidateStruct(measurement); err != nil {
+			log.Error(err)
+			api.RequestErrorHandler(w, fmt.Errorf("malformed request! check body"))
+			return
+		}
 	}
 
 	for _, measurement := range measurements {

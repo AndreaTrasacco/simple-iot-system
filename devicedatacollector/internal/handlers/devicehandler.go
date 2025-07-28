@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/api"
 	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/models"
 	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/services"
+	"github.com/AndreaTrasacco/simple-iot-system/devicedatacollector/internal/tools/validation"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -15,6 +17,12 @@ func RegisterDevice(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&device); err != nil {
 		log.Error(err)
 		api.RequestErrorHandler(w, err)
+		return
+	}
+
+	if err := validation.ValidateStruct(device); err != nil {
+		log.Error(err)
+		api.RequestErrorHandler(w, fmt.Errorf("malformed request! check body"))
 		return
 	}
 
